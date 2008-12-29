@@ -18,8 +18,7 @@ int main(void) {
 	} 
 	c = t;
 	while (c) {
-		printf("%s - ", TOK_NAMES[c->type]);
-		fwrite(c->value, c->length * sizeof(char), 1, stdout);
+		printf("%s - %s", TOK_NAMES[c->type], c->value);
 		printf("\n");
 		c = c->next;
 	}
