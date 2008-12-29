@@ -1,7 +1,9 @@
+#include <string.h>
 #include <tokenizer.h>
 
 int main(void) {
-	struct Token* t = tokenize("!sectionfoo", 11);
+	const char* str = "section foo{bar=\"bleh\";}";
+	struct Token* t = tokenize(str, strlen(str));
 	struct Token* c = t;
 	while (c) {
 		printf("%d - ", c->type);

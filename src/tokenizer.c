@@ -11,13 +11,6 @@ enum state_t {
 	ST_STR,
 	ST_NEG,
 	ST_INT,
-	ST_SEC0, /* seen !        */
-	ST_SEC1, /* seen !s       */
-	ST_SEC2, /* seen !se      */
-	ST_SEC3, /* seen !sec     */
-	ST_SEC4, /* seen !sect    */
-	ST_SEC5, /* seen !secti   */
-	ST_SEC6, /* seen !sectio  */
 	ST_WS,
 	ST_COM
 };
@@ -25,6 +18,8 @@ enum state_t {
 const char* ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const char* NUM   = "0123456789";
 const char* WS    = " \t\r\n";
+
+const char* SECTION = "section";
 
 struct Token* create_token(enum token_t t, const char* s, size_t n) {
 	struct Token* tok = NULL;
@@ -72,8 +67,6 @@ struct Token* tokenize(const char* s, size_t n) {
 					t = create_token(TOK_EQ, start, 1);
 				} else if (*s == ';') {
 					t = create_token(TOK_SEMI, start, 1);
-				} else if (*s == '!') {
-					state = ST_SEC0;
 				} else if (strchr(WS, *s)) {
 					state = ST_WS;
 				} else if (*s == '#') {
@@ -104,6 +97,9 @@ struct Token* tokenize(const char* s, size_t n) {
 					s++;
 				} else {
 					t = create_token(TOK_STR, start, (s - start));
+					if (strcmp(t->value, SECTION) == 0) {
+						t->type = TOK_SEC;
+					}
 					state = ST_INIT;
 				}
 				break;
@@ -122,70 +118,6 @@ struct Token* tokenize(const char* s, size_t n) {
 				} else {
 					t = create_token(TOK_INT, start, (s - start));
 					state = ST_INIT;
-				}
-				break;
-			case ST_SEC0:
-				if (*s == 's') {
-					state = ST_SEC1;
-					s++;
-				} else {
-					/* TODO: asplode */
-					assert(1 == 0);
-				}
-				break;
-			case ST_SEC1:
-				if (*s == 'e') {
-					state = ST_SEC2;
-					s++;
-				} else {
-					/* TODO: asplode */
-					assert(1 == 0);
-				}
-				break;
-			case ST_SEC2:
-				if (*s == 'c') {
-					state = ST_SEC3;
-					s++;
-				} else {
-					/* TODO: asplode */
-					assert(1 == 0);
-				}
-				break;
-			case ST_SEC3:
-				if (*s == 't') {
-					state = ST_SEC4;
-					s++;
-				} else {
-					/* TODO: asplode */
-					assert(1 == 0);
-				}
-				break;
-			case ST_SEC4:
-				if (*s == 'i') {
-					state = ST_SEC5;
-					s++;
-				} else {
-					/* TODO: asplode */
-					assert(1 == 0);
-				}
-				break;
-			case ST_SEC5:
-				if (*s == 'o') {
-					state = ST_SEC6;
-					s++;
-				} else {
-					/* TODO: asplode */
-					assert(1 == 0);
-				}
-				break;
-			case ST_SEC6:
-				if (*s == 'n') {
-					s++;
-					t = create_token(TOK_SEC, start, (s - start));
-					state = ST_INIT;
-				} else {
-					/* TODO: asplode */
-					assert(1 == 0);
 				}
 				break;
 			case ST_WS:
@@ -215,6 +147,7 @@ struct Token* tokenize(const char* s, size_t n) {
 		}
 	}
 
+	t = NULL;
 	switch (state) {
 		case ST_ID:
 			t = create_token(TOK_ID, start, end - start);
@@ -227,6 +160,7 @@ struct Token* tokenize(const char* s, size_t n) {
 			break;
 		case ST_WS:
 		case ST_COM:
+		case ST_INIT:
 			break;
 		default:
 			/* TODO: asplode */

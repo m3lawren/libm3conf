@@ -7,7 +7,7 @@ lb   ::= {
 rb   ::= }
 eq   ::= =
 semi ::= ;
-sec  ::= !section
+sec  ::= section
 ws   ::= [ \t\r\n]*
 com  ::= #[^\r\n]*[\r\n]
 
