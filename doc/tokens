@@ -1,0 +1,14 @@
+Tokens:
+
+id   ::= [a-zA-Z][a-zA-Z0-9]*
+str  ::= "([^"]|"")*"
+int  ::= (0|-?[1-9][0-9]*)
+lb   ::= {
+rb   ::= }
+eq   ::= =
+semi ::= ;
+sec  ::= !section
+ws   ::= [ \t\r\n]*
+com  ::= #[^\r\n]*[\r\n]
+
+ws and com are not passed through to the parser.

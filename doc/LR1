@@ -1,0 +1,111 @@
+LR(1) Grammar:
+
+0 S -> CONF
+1 CONF -> DECLS SECTS
+2 DECLS -> DECLS id eq VALUE semi
+3 DECLS -> epsilon
+4 SECTS -> SECTS sec id lb CONF rb
+5 SECTS -> epsilon
+6 VALUE -> str
+7 VALUE -> int
+
+First(S)     = [ epsilon, id, sec ]
+First(CONF)  = [ epsilon, id, sec ]
+First(DECLS) = [ epsilon, id ]
+First(SECTS) = [ epsilon, sec ]
+First(VALUE) = [ str, int ]
+
+Item Set 0!
+[S -> . CONF, $]
+ + [CONF -> . DECLS SECTS, $]
+ + [DECLS -> . DECLS id eq VALUE semi, (sec, id, $)]
+ + [DECLS -> ., (sec, id, $)]
+
+Item Set 1!
+[S -> CONF ., $]
+
+Item Set 2!
+[CONF -> DECLS . SECTS, (rb, $)]
+ + [SECTS -> . SECTS sec id lb CONF rb, (rb, sec, $)]
+ + [SECTS -> ., (rb, sec, $)]
+[DECLS -> DECLS . id eq VALUE semi, (rb, sec, id, $)]
+
+Item Set 3!
+[CONF -> DECLS SECTS ., (rb, $)]
+[SECTS -> SECTS . sec id lb CONF rb, (rb, sec, $)]
+
+Item Set 4!
+[DECLS -> DECLS id . eq VALUE semi, (rb, sec, id, $)]
+
+Item Set 5!
+[SECTS -> SECTS sec . id lb CONF rb, (rb, sec, $)]
+
+Item Set 6!
+[DECLS -> DECLS id eq . VALUE semi, (rb, sec, id, $)]
+ + [VALUE -> . str, semi]
+ + [VALUE -> . int, semi]
+
+Item Set 7!
+[SECTS -> SECTS sec id . lb CONF rb, (rb, sec, $)]
+
+Item Set 8!
+[DECLS -> DECLS id eq VALUE . semi, (rb, sec, id, $)]
+
+Item Set 9!
+[VALUE -> str ., semi]
+
+Item Set 10!
+[VALUE -> int ., semi]
+
+Item Set 11!
+[SECTS -> SECTS sec id lb . CONF rb, (rb, sec, $)]
+ + [CONF -> . DECLS SECTS, rb]
+ + [DECLS -> . DECLS id eq VALUE semi, (id, sec, rb)]
+ + [DECLS -> ., (id, sec, rb)]
+
+Item Set 12!
+[DECLS -> DECLS id eq VALUE semi ., (rb, sec, id, $)]
+
+Item Set 13!
+[SECTS -> SECTS sec id lb CONF . rb, (rb, sec, $)]
+
+Item Set 14!
+[SECTS -> SECTS sec id lb CONF rb ., (rb, sec, $)]
+
+Actions:
+Action(0, CONF) = s1
+Action(0, DECLS) = s2
+Action(0, sec) = r3
+Action(0, id) = r3
+Action(0, $) = r3
+Action(1, $) = r0
+Action(2, SECTS) = s3
+Action(2, rb) = r5
+Action(2, sec) = r5
+Action(2, $) = r5
+Action(2, id) = s4
+Action(3, rb) = r1
+Action(3, $) = r1
+Action(3, sec) = s5
+Action(4, eq) = s6
+Action(5, id) = s7
+Action(6, VALUE) = s8
+Action(6, str) = s9
+Action(6, int) = s10
+Action(7, lb) = s11
+Action(8, semi) = s12
+Action(9, semi) = r6
+Action(10, semi) = r7
+Action(11, CONF) = s13
+Action(11, DECLS) = s2
+Action(11, id) = r3
+Action(11, sec) = r3
+Action(11, rb) = r3
+Action(12, rb) = r2
+Action(12, sec) = r2
+Action(12, id) = r2
+Action(12, $) = r2
+Action(13, rb) = s14
+Action(14, rb) = r4
+Action(14, sec) = r4
+Action(14, $) = r4

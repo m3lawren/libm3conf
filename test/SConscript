@@ -1,0 +1,9 @@
+Import('env')
+
+sources = [
+	'main.c',
+]
+
+test = env.Program('m3conftest', sources, LIBS='m3conf')
+
+Return('test')

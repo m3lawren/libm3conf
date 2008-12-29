@@ -1,0 +1,9 @@
+Import('env')
+
+sources = [
+	'tokenizer.c',
+]
+
+lib = env.Library('m3conf', sources)
+
+Return('lib')
