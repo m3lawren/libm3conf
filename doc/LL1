@@ -1,30 +1,22 @@
 LL(1) Grammar:
 
-0 S     -> CONF
-1 CONF  -> DECLS SECTS
-2 DECLS -> id eq VALUE semi DECLS
-3 DECLS -> epsilon
-4 SECTS -> sec id lb CONF rb SECTS
-5 SECTS -> epsilon
-6 VALUE -> str
-7 VALUE -> int
+0 S     -> STMTS
+1 STMTS -> id eq VALUE semi STMTS
+2 STMTS -> sec id lb STMTS rb STMTS
+3 STMTS -> epsilon
+4 VALUE -> int
+5 VALUE -> str
 
-First(S)     = [ id, sec, epsilon ]
-First(CONF)  = [ id, sec, epsilon ]
-First(DECLS) = [ id, epsilon ]
-First(SECTS) = [ sec, epsilon ]
-First(VALUE) = [ str, int ]
+First(S)     = [id, sec, epsilon]
+First(STMTS) = [id, sec, epsilon]
+First(VALUE) = [int, str]
 
-Follow(S)     = [ $ ]
-Follow(CONFG) = [ $, rb ]
-Follow(DECLS) = [ $, rb, sec ]
-Follow(SECTS) = [ $, rb ]
-Follow(VALUE) = [ semi ]
+Follow(S)     = [$]
+Follow(STMTS) = [$, rb]
+Follow(VALUE) = [semi]
 
-      | id | str | int | rb | semi | sec | $
-------+----+-----+-----+----+------+-----+---
-S     | 0  |     |     |    |      |  0  | 0
-CONF  | 1  |     |     | 1  |      |  1  | 1
-DECLS | 2  |     |     | 3  |      |  3  | 3
-SECTS |    |     |     | 5  |      |  4  | 5
-VALUE |    |  6  |  7  |    |      |     |
+      | id | sec | int | str | rb | $
+------+----+-----+-----+-----+----+---
+S     |  0 |  0  |     |     |    | 0
+STMTS |  1 |  2  |     |     |  3 | 3
+VALUE |    |     |  4  |  5  |    | 
