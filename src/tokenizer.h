@@ -19,6 +19,8 @@ enum token_t {
 	TOK_SEC
 };
 
+extern const char* const TOK_NAMES[];
+
 struct Token {
 	struct Token* next;
 	char*         value;

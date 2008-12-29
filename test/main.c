@@ -6,7 +6,7 @@ int main(void) {
 	struct Token* t = tokenize(str, strlen(str));
 	struct Token* c = t;
 	while (c) {
-		printf("%d - ", c->type);
+		printf("%s - ", TOK_NAMES[c->type]);
 		fwrite(c->value, c->length * sizeof(char), 1, stdout);
 		printf("\n");
 		c = c->next;

@@ -15,11 +15,22 @@ enum state_t {
 	ST_COM
 };
 
-const char* ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const char* NUM   = "0123456789";
-const char* WS    = " \t\r\n";
+const char* const ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const char* const NUM   = "0123456789";
+const char* const WS    = " \t\r\n";
 
-const char* SECTION = "section";
+const char* const SECTION = "section";
+
+const char* const TOK_NAMES[] = {
+	"TOK_ID",
+	"TOK_STR",
+	"TOK_INT",
+	"TOK_LB",
+	"TOK_RB",
+	"TOK_EQ",
+	"TOK_SEMI",
+	"TOK_SEC"
+};
 
 struct Token* create_token(enum token_t t, const char* s, size_t n) {
 	struct Token* tok = NULL;
@@ -82,6 +93,9 @@ struct Token* tokenize(const char* s, size_t n) {
 					s++;
 				} else {
 					t = create_token(TOK_ID, start, (s - start));
+					if (strcmp(t->value, SECTION) == 0) {
+						t->type = TOK_SEC;
+					}
 					state = ST_INIT;
 				}
 				break;
@@ -97,9 +111,6 @@ struct Token* tokenize(const char* s, size_t n) {
 					s++;
 				} else {
 					t = create_token(TOK_STR, start, (s - start));
-					if (strcmp(t->value, SECTION) == 0) {
-						t->type = TOK_SEC;
-					}
 					state = ST_INIT;
 				}
 				break;
@@ -151,6 +162,9 @@ struct Token* tokenize(const char* s, size_t n) {
 	switch (state) {
 		case ST_ID:
 			t = create_token(TOK_ID, start, end - start);
+			if (strcmp(t->value, SECTION) == 0) {
+				t->type = TOK_SEC;
+			}
 			break;
 		case ST_STR:
 			t = create_token(TOK_STR, start, end - start);
