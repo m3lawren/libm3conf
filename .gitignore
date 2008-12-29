@@ -1,0 +1,5 @@
+*.a
+*.o
+m3conftest
+.*.sw*
+.scons*
