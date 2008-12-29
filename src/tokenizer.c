@@ -8,6 +8,7 @@ enum state_t {
 	ST_INIT,
 	ST_ID,
 	ST_STRCONT,
+	ST_STRESC,
 	ST_STR,
 	ST_NEG,
 	ST_INT,
@@ -32,15 +33,57 @@ const char* const TOK_NAMES[] = {
 	"TOK_SEC"
 };
 
-struct Token* create_token(enum token_t t, const char* s, size_t n) {
+static size_t clean_string(const char* s, size_t n, char** buf) {
+	const char* end = s + n - 1;
+	const char* r = s + 1;
+	char* w;
+	size_t sz = 0;
+
+	while (r < end) {
+		if (*r == '\\') {
+			r++;
+		}
+		sz++;
+		r++;
+	}
+
+	r = s + 1;
+	*buf = malloc((sz + 1) * sizeof(char));
+	w = *buf;
+	while (r < end) {
+		if (*r == '\\') {
+			r++;
+		}
+		*w++ = *r++;
+	}
+	*w = '\0';
+	return sz;
+}
+
+static struct Token* create_token_impl(enum token_t t) {
 	struct Token* tok = NULL;
-	
+
 	tok = malloc(sizeof(struct Token));
 	tok->next = NULL;
-	tok->value = malloc((n + 1) * sizeof(char));
-	tok->length = n;
+	tok->value = NULL;
+	tok->length = 0;
 	tok->type = t;
-	
+
+	return tok;
+}
+
+static struct Token* create_string_token(const char* s, size_t n) {
+	struct Token* tok = create_token_impl(TOK_STR);
+	tok->length = clean_string(s, n, &tok->value);
+
+	return tok;
+}
+
+static struct Token* create_token(enum token_t t, const char* s, size_t n) {
+	struct Token* tok = create_token_impl(t);
+
+	tok->value = malloc((n + 1) * sizeof(char));
+
 	memcpy(tok->value, s, n * sizeof(char));
 	tok->value[n] = '\0';
 
@@ -99,19 +142,24 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 				}
 				break;
 			case ST_STRCONT:
-				if (*s == '"') {
+				if (*s == '\\') {
+					state = ST_STRESC;
+				} else if (*s == '"') {
 					state = ST_STR;
-				} 
+				}
+				s++;
+				break;
+			case ST_STRESC:
+				if (strchr("\\\"", *s)) {
+					state = ST_STRCONT;
+				} else {
+					goto fail;
+				}
 				s++;
 				break;
 			case ST_STR:
-				if (*s == '"') {
-					state = ST_STRCONT;
-					s++;
-				} else {
-					t = create_token(TOK_STR, start, (s - start));
-					state = ST_INIT;
-				}
+				t = create_string_token(start, (s - start));
+				state = ST_INIT;
 				break;
 			case ST_NEG:
 				if (strchr(NUM, *s) && *s != '0') {
@@ -164,7 +212,7 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 			}
 			break;
 		case ST_STR:
-			t = create_token(TOK_STR, start, end - start);
+			t = create_string_token(start, (end - start));
 			break;
 		case ST_INT:
 			t = create_token(TOK_INT, start, end - start);
@@ -189,7 +237,7 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 	return 0;
 fail:
 	free_tokens(head);
-	return n - (end - start) + 1;
+	return n - (end - s) + 1;
 }
 
 void free_tokens(struct Token* t) {
