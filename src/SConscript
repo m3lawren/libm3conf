@@ -1,6 +1,7 @@
 Import('env')
 
 sources = [
+	'llparser.c',
 	'tokenizer.c',
 ]
 
