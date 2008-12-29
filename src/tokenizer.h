@@ -28,7 +28,7 @@ struct Token {
 	enum token_t  type;
 };
 
-struct Token* tokenize(const char*, size_t);
+size_t tokenize(const char*, size_t, struct Token**);
 
 void free_tokens(struct Token*);
 

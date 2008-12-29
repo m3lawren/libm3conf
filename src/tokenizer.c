@@ -47,7 +47,7 @@ struct Token* create_token(enum token_t t, const char* s, size_t n) {
 	return tok;
 }
 
-struct Token* tokenize(const char* s, size_t n) {
+size_t tokenize(const char* s, size_t n, struct Token** ret) {
 	enum state_t state = ST_INIT;
 	const char* end = s + n;
 	const char* start = s;
@@ -83,8 +83,7 @@ struct Token* tokenize(const char* s, size_t n) {
 				} else if (*s == '#') {
 					state = ST_COM;
 				} else {
-					/* TODO: asplode */
-					assert(1 == 0);
+					goto fail;
 				}
 				s++;
 				break;
@@ -119,8 +118,7 @@ struct Token* tokenize(const char* s, size_t n) {
 					state = ST_INT;
 					s++;
 				} else {
-					/* TODO: asplode */
-					assert(1 == 0);
+					goto fail;
 				}
 				break;
 			case ST_INT:
@@ -145,8 +143,7 @@ struct Token* tokenize(const char* s, size_t n) {
 				s++;
 				break;
 			default:
-				/* TODO: asplode */
-				assert(1 == 0);
+				goto fail;
 		}
 		if (t != NULL) {
 			if (head == NULL) {
@@ -177,8 +174,7 @@ struct Token* tokenize(const char* s, size_t n) {
 		case ST_INIT:
 			break;
 		default:
-			/* TODO: asplode */
-			assert(1 == 0);
+			goto fail;
 	}
 	if (t != NULL) {
 		if (head == NULL) {
@@ -189,7 +185,11 @@ struct Token* tokenize(const char* s, size_t n) {
 		}
 	}
 
-	return head;
+	*ret = head;
+	return 0;
+fail:
+	free_tokens(head);
+	return n - (end - start) + 1;
 }
 
 void free_tokens(struct Token* t) {
