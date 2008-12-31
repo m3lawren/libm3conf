@@ -10,7 +10,7 @@ struct LRStack {
 	size_t n;
 };
 
-struct LRStack* lrs_create() {
+static struct LRStack* lrs_create() {
 	struct LRStack* s = malloc(sizeof(struct LRStack));
 	s->d = NULL;
 	s->c = s->n = 0;
@@ -18,12 +18,12 @@ struct LRStack* lrs_create() {
 	return s;
 }
 
-void lrs_destroy(struct LRStack* s) {
+static void lrs_destroy(struct LRStack* s) {
 	free(s->d);
 	free(s);
 }
 
-void lrs_push(struct LRStack* s, int v) {
+static void lrs_push(struct LRStack* s, int v) {
 	if (s->c == s->n) {
 		if (s->c) {
 			s->c *= 2;
@@ -36,19 +36,19 @@ void lrs_push(struct LRStack* s, int v) {
 	s->d[s->n++] = v;
 }
 
-int lrs_peek(const struct LRStack* s) {
+static int lrs_peek(const struct LRStack* s) {
 	return s->d[s->n - 1];
 }
 
-void lrs_pop(struct LRStack* s) {
+static void lrs_pop(struct LRStack* s) {
 	s->n--;
 }
 
-int lrs_empty(const struct LRStack* s) {
+static int lrs_empty(const struct LRStack* s) {
 	return s->n == 0;
 }
 
-int action_reduce(int s, enum token_t t) {
+static int action_reduce(int s, enum token_t t) {
 	switch (s) {
 		case 0:
 			switch (t) {
@@ -107,7 +107,7 @@ int action_reduce(int s, enum token_t t) {
 	}
 }
 
-int action_shift(int s, enum token_t t) {
+static int action_shift(int s, enum token_t t) {
 	switch (s) {
 		case 1:
 			switch (t) {
@@ -171,7 +171,7 @@ int action_shift(int s, enum token_t t) {
 	}
 }
 
-int action_accept(int s, enum token_t t) {
+static int action_accept(int s, enum token_t t) {
 	switch (s) {
 		case 1:
 			switch (t) {
@@ -185,7 +185,7 @@ int action_accept(int s, enum token_t t) {
 	}
 }
 
-int action_shift_reduction(int s, int r) {
+static int action_shift_reduction(int s, int r) {
 	switch (s) {
 		case 0:
 			switch (r) {
@@ -263,5 +263,4 @@ void parse(struct Token* t) {
 		}
 	}
 	lrs_destroy(s);
-	(void)t;
 }
