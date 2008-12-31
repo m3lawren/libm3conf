@@ -1,8 +1,9 @@
+#include <parser.h>
 #include <string.h>
 #include <tokenizer.h>
 
 int main(void) {
-	const char* str = "a0\"\\\\\\\"\\\"\"";
+	const char* str = "section me{z=5;section you{x=3;}y=4;}";
 	struct Token* t;
 	struct Token* c;
 	size_t ret = tokenize(str, strlen(str), &t);
@@ -22,6 +23,7 @@ int main(void) {
 		printf("\n");
 		c = c->next;
 	}
+	parse(t);
 	free_tokens(t);
 	return 0;
 }

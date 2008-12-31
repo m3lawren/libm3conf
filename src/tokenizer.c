@@ -30,7 +30,8 @@ const char* const TOK_NAMES[] = {
 	"TOK_RB",
 	"TOK_EQ",
 	"TOK_SEMI",
-	"TOK_SEC"
+	"TOK_SEC",
+	"TOK_EOF"
 };
 
 static size_t clean_string(const char* s, size_t n, char** buf) {
@@ -231,6 +232,16 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 			tail->next = t;
 			tail = t;
 		}
+	}
+
+	t = create_token_impl(TOK_EOF);
+	t->value = malloc(sizeof(char));
+	t->value[0] = '\0';
+	if (head == NULL) {
+		head = tail = t;
+	} else {
+		tail->next = t;
+		tail = t;
 	}
 
 	*ret = head;

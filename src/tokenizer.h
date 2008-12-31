@@ -16,7 +16,8 @@ enum token_t {
 	TOK_RB,
 	TOK_EQ,
 	TOK_SEMI,
-	TOK_SEC
+	TOK_SEC,
+	TOK_EOF
 };
 
 extern const char* const TOK_NAMES[];
