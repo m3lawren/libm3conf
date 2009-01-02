@@ -6,4 +6,4 @@ m3conftest_SOURCES = \
 m3conftest_LDADD = \
 	$(top_srcdir)/src/libm3conf.la	
 
-m3conftest_CCFLAGS = -I$(top_srcdir)/src
+m3conftest_CPPFLAGS = -I$(top_srcdir)/src
