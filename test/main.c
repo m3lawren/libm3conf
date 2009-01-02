@@ -1,6 +1,6 @@
-#include <parser.h>
+#include <m3conf/parser.h>
+#include <m3conf/tokenizer.h>
 #include <string.h>
-#include <tokenizer.h>
 
 int main(void) {
 	const char* str = "section me{z=5;section you{x=3;}y=4;}";

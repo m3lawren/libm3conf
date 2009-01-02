@@ -1,8 +1,8 @@
-#include <parser.h>
+#include <m3conf/parser.h>
 
 #include <assert.h>
+#include <m3conf/tokenizer.h>
 #include <stdlib.h>
-#include <tokenizer.h>
 
 struct LRStack {
 	int* d;

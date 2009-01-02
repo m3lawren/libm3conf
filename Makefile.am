@@ -1,3 +1,3 @@
-SUBDIRS = src test
+SUBDIRS = m3conf test
 
 ACLOCAL_AMFLAGS = -I m4
