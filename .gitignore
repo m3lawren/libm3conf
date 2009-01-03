@@ -2,8 +2,10 @@
 *.in
 *.la
 *.lo
+*.log
 *.m4
 *.o
+*.scan
 .*.sw*
 .scons*
 config.*
