@@ -5,3 +5,5 @@ m3conftest_SOURCES = \
 
 m3conftest_LDADD = \
 	$(top_srcdir)/m3conf/libm3conf.la	
+
+AM_CFLAGS = $(CFLAGS_WARNLEVEL) $(CFLAGS_PICKINESS)
