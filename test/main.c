@@ -3,7 +3,13 @@
 #include <string.h>
 
 int main(void) {
-	const char* str = "section me{z=5;section you{x=3;}y=4;}";
+	const char* str = "section me {\n"
+	                  "  you.z = 5;\n"
+						   "  section you {\n"
+							"    _x = 3;\n"
+							"  }\n"
+							"  y_bleh = 4;\n"
+							"}";
 	struct Token* t;
 	struct Token* c;
 	size_t ret = tokenize(str, strlen(str), &t);

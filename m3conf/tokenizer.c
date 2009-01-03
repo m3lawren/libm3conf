@@ -104,7 +104,7 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 		switch (state) {
 			case ST_INIT:
 				start = s;
-				if (strchr(ALPHA, *s)) {
+				if (strchr(ALPHA, *s) || *s == '_') {
 					state = ST_ID;
 				} else if (*s == '"') {
 					state = ST_STRCONT;
@@ -132,7 +132,7 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 				s++;
 				break;
 			case ST_ID:
-				if (strchr(ALPHA, *s) || strchr(NUM, *s)) {
+				if (strchr(ALPHA, *s) || strchr(NUM, *s) || *s == '_' || *s == '.') {
 					s++;
 				} else {
 					t = create_token(TOK_ID, start, (s - start));
