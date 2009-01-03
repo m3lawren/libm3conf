@@ -16,7 +16,6 @@ enum token_t {
 	TOK_RB,
 	TOK_EQ,
 	TOK_SEMI,
-	TOK_SEC,
 	TOK_EOF
 };
 

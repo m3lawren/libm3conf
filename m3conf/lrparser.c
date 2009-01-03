@@ -54,51 +54,56 @@ static int action_reduce(int s, enum token_t t) {
 			switch (t) {
 				case TOK_EOF:
 				case TOK_ID:
-				case TOK_SEC:
-					return 3;
+					return 2;
+				default:
+					return -1;
+			}
+		case 3:
+			switch (t) {
+				case TOK_EOF:
+				case TOK_RB:
+				case TOK_ID:
+					return 1;
+				default:
+					return -1;
+			}
+		case 5:
+			switch (t) {
+				case TOK_RB:
+				case TOK_ID:
+					return 2;
 				default:
 					return -1;
 			}
 		case 7:
 			switch (t) {
 				case TOK_SEMI:
-					return 4;
+					return 5;
 				default:
 					return -1;
 			}
 		case 8:
 			switch (t) {
 				case TOK_SEMI:
-					return 5;
-				default:
-					return -1;
-			}
-		case 9:
-			switch (t) {
-				case TOK_ID:
-				case TOK_SEC:
-				case TOK_RB:
-					return 3;
+					return 6;
 				default:
 					return -1;
 			}
 		case 10:
 			switch (t) {
 				case TOK_EOF:
-				case TOK_ID:
-				case TOK_SEC:
 				case TOK_RB:
-					return 1;
+				case TOK_ID:
+					return 3;
 				default:
 					return -1;
 			}
-		case 12:
+		case 11:
 			switch (t) {
 				case TOK_EOF:
-				case TOK_ID:
-				case TOK_SEC:
 				case TOK_RB:
-					return 2;
+				case TOK_ID:
+					return 4;
 				default:
 					return -1;
 			}
@@ -113,8 +118,6 @@ static int action_shift(int s, enum token_t t) {
 			switch (t) {
 				case TOK_ID:
 					return 2;
-				case TOK_SEC:
-					return 3;
 				default:
 					return -1;
 			}
@@ -122,12 +125,7 @@ static int action_shift(int s, enum token_t t) {
 			switch (t) {
 				case TOK_EQ:
 					return 4;
-				default:
-					return -1;
-			}
-		case 3:
-			switch (t) {
-				case TOK_ID:
+				case TOK_LB:
 					return 5;
 				default:
 					return -1;
@@ -141,13 +139,6 @@ static int action_shift(int s, enum token_t t) {
 				default:
 					return -1;
 			}
-		case 5:
-			switch (t) {
-				case TOK_LB:
-					return 9;
-				default:
-					return -1;
-			}
 		case 6:
 			switch (t) {
 				case TOK_SEMI:
@@ -155,14 +146,12 @@ static int action_shift(int s, enum token_t t) {
 				default:
 					return -1;
 			}
-		case 11:
+		case 9:
 			switch (t) {
 				case TOK_RB:
-					return 12;
+					return 11;
 				case TOK_ID:
 					return 2;
-				case TOK_SEC:
-					return 3;
 				default:
 					return -1;
 			}
@@ -191,25 +180,31 @@ static int action_shift_reduction(int s, int r) {
 			switch (r) {
 				case 1:
 				case 2:
-				case 3:
 					return 1;
+				default:
+					return -1;
+			}
+		case 2:
+			switch (r) {
+				case 3:
+				case 4:
+					return 3;
 				default:
 					return -1;
 			}
 		case 4:
 			switch (r) {
-				case 4:
 				case 5:
+				case 6:
 					return 6;
 				default:
 					return -1;
 			}
-		case 9:
+		case 5:
 			switch (r) {
 				case 1:
 				case 2:
-				case 3:
-					return 11;
+					return 9;
 				default:
 					return -1;
 			}
@@ -230,24 +225,19 @@ void parse(struct Token* t) {
 		} else if ((x = action_reduce(lrs_peek(s), t->type)) != -1) {
 			printf("reduced %d\n", x);
 			switch (x) {
-				case 2:
-					lrs_pop(s);
-					assert(!lrs_empty(s));
 				case 1:
-					lrs_pop(s);
-					assert(!lrs_empty(s));
-					lrs_pop(s);
-					assert(!lrs_empty(s));
+				case 3:
+				case 4:
 					lrs_pop(s);
 					assert(!lrs_empty(s));
 					lrs_pop(s);
 					assert(!lrs_empty(s));
 				case 0:
-				case 4:
 				case 5:
+				case 6:
 					lrs_pop(s);
 					assert(!lrs_empty(s));
-				case 3:
+				case 2:
 					break;
 				default:
 					assert(1 == 0);

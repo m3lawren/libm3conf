@@ -3,9 +3,9 @@
 #include <string.h>
 
 int main(void) {
-	const char* str = "section me {\n"
+	const char* str = "me {\n"
 	                  "  you.z = 5;\n"
-						   "  section you {\n"
+						   "  you {\n"
 							"    _x = 3;\n"
 							"  }\n"
 							"  y_bleh = 4;\n"

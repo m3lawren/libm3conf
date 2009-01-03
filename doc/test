@@ -1,35 +1,3 @@
-Input: sec id lb rb
+Input: id lb rb id eq int semi
 Stack: [0]
 Output: [ ]
-
-Input: sec id lb rb
-Stack: [0, 1]
-Output: [3]
-
-Input: id lb rb
-Stack: [0, 1, 3]
-Output: [3]
-
-Input: lb rb
-Stack: [0, 1, 3, 5]
-Output: [3]
-
-Input: rb
-Stack: [0, 1, 3, 5, 9]
-Output: [3]
-
-Input: rb
-Stack: [0, 1, 3, 5, 9, 11]
-Output: [3, 3]
-
-Input: 
-Stack: [0, 1, 3, 5, 9, 11, 12]
-Output: [3, 3]
-
-Input:
-Stack: [0, 1]
-Output: [3, 3, 2]
-
-STMTS -> STMTS sec id lb STMTS rb
-      -> STMTS sec id lb rb
-		-> sec id lb rb

@@ -30,7 +30,6 @@ const char* const TOK_NAMES[] = {
 	"TOK_RB",
 	"TOK_EQ",
 	"TOK_SEMI",
-	"TOK_SEC",
 	"TOK_EOF"
 };
 
@@ -136,9 +135,6 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 					s++;
 				} else {
 					t = create_token(TOK_ID, start, (s - start));
-					if (strcmp(t->value, SECTION) == 0) {
-						t->type = TOK_SEC;
-					}
 					state = ST_INIT;
 				}
 				break;
@@ -208,9 +204,6 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 	switch (state) {
 		case ST_ID:
 			t = create_token(TOK_ID, start, end - start);
-			if (strcmp(t->value, SECTION) == 0) {
-				t->type = TOK_SEC;
-			}
 			break;
 		case ST_STR:
 			t = create_string_token(start, (end - start));
