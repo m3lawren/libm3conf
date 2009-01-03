@@ -1,8 +1,20 @@
 #include <m3conf/parser.h>
 
+#include <config.h>
+
 #include <assert.h>
 #include <m3conf/tokenizer.h>
 #include <stdlib.h>
+
+const char* REDUCTIONS[] = {
+	"S     -> STMTS",
+	"STMTS -> STMTS id STMT",
+	"STMTS ->",
+	"STMT  -> eq VALUE semi",
+	"STMT  -> lb STMTS rb",
+	"VALUE -> int", 
+	"VALUE -> str"
+};
 
 struct LRStack {
 	int* d;
@@ -223,7 +235,9 @@ void parse(struct Token* t) {
 			t = t->next;
 			assert(t != NULL);
 		} else if ((x = action_reduce(lrs_peek(s), t->type)) != -1) {
-			printf("reduced %d\n", x);
+#ifdef DEBUG
+			printf("LR: %d %s\n", x, REDUCTIONS[x]);
+#endif
 			switch (x) {
 				case 1:
 				case 3:
@@ -246,7 +260,9 @@ void parse(struct Token* t) {
 			assert(x != -1);
 			lrs_push(s, x);
 		} else if (action_accept(lrs_peek(s), t->type)) {
-			printf("accepted\n");
+#ifdef DEBUG
+			printf("LR: 0 %s\n", REDUCTIONS[0]);
+#endif
 			break;
 		} else {
 			assert(0 == 1);
