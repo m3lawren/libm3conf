@@ -235,7 +235,7 @@ void parse(struct Token* t) {
 			t = t->next;
 			assert(t != NULL);
 		} else if ((x = action_reduce(lrs_peek(s), t->type)) != -1) {
-#ifdef DEBUG
+#ifdef M3CONF_DEBUG
 			printf("LR: %d %s\n", x, REDUCTIONS[x]);
 #endif
 			switch (x) {
@@ -260,7 +260,7 @@ void parse(struct Token* t) {
 			assert(x != -1);
 			lrs_push(s, x);
 		} else if (action_accept(lrs_peek(s), t->type)) {
-#ifdef DEBUG
+#ifdef M3CONF_DEBUG
 			printf("LR: 0 %s\n", REDUCTIONS[0]);
 #endif
 			break;

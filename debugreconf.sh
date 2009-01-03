@@ -1,5 +1,5 @@
 #!/bin/bash
 
 autoreconf -f -i && \
-CFLAGS="-DDEBUG -Wall -Wextra -Werror -g" ./configure --prefix=`pwd`/fakeroot && \
+CFLAGS="-DM3CONF_DEBUG -Wall -Wextra -Werror -g" ./configure --prefix=`pwd`/fakeroot && \
 make clean
