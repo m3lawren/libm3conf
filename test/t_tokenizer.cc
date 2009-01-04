@@ -1,8 +1,8 @@
 #include <m3conf/tokenizer.h>
 #include <test/XTest.h>
 
-#define CHECK_TOKEN(toktype, val) XTS_ASSERT_DIFFERS(NULL, c); XTS_ASSERT_EQUALS(toktype, c->type); XTS_ASSERT_EQUALS(std::string(val), c->value); c = c->next;
-#define CHECK_EOF() CHECK_TOKEN(TOK_EOF, ""); XTS_ASSERT_EQUALS(NULL, c);
+#define CHECK_TOKEN(toktype, val) XTS_ASSERT_EQUALS(false, NULL == c); XTS_ASSERT_EQUALS(toktype, c->type); XTS_ASSERT_EQUALS(std::string(val), c->value); c = c->next;
+#define CHECK_EOF() CHECK_TOKEN(TOK_EOF, ""); XTS_ASSERT_EQUALS(true, NULL == c);
 
 XTS_TEST(TokenizerTests, testSingleChars) {
 	struct Token* t;
