@@ -124,3 +124,31 @@ XTS_TEST(TokenizerTests, testCommentChaining) {
 
 	free_tokens(t);
 }
+
+XTS_TEST(TokenizerTests, testInvalidInt) {
+	struct Token* t;
+	std::string data;
+	data = "-";
+	XTS_ASSERT_EQUALS(2, tokenize(data.c_str(), data.length(), &t));
+	data = "-a";
+	XTS_ASSERT_EQUALS(2, tokenize(data.c_str(), data.length(), &t));
+}
+
+XTS_TEST(TokenizerTests, testInvalidStr) {
+	struct Token* t;
+	std::string data;
+	data = "\"";
+	XTS_ASSERT_EQUALS(2, tokenize(data.c_str(), data.length(), &t));
+	data = "\"\\"; /* TODO: should this return 2? */
+	XTS_ASSERT_EQUALS(3, tokenize(data.c_str(), data.length(), &t));
+	data = "\"\\a"; 
+	XTS_ASSERT_EQUALS(3, tokenize(data.c_str(), data.length(), &t));
+	data = "\"\\\\\\\"";
+	XTS_ASSERT_EQUALS(6, tokenize(data.c_str(), data.length(), &t));
+}
+
+XTS_TEST(TokenizerTests, testInvalidId) {
+	struct Token* t;
+	std::string data = ".";
+	XTS_ASSERT_EQUALS(1, tokenize(data.c_str(), data.length(), &t));
+}
