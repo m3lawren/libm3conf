@@ -36,12 +36,12 @@ XTS_TEST(TokenizerTests, testValidInt) {
 XTS_TEST(TokenizerTests, testValidStr) {
 	struct Token* t;
 	struct Token* c;
-	std::string data = "\"aoeu\"\"\\\"quote\"\"\\\\\\\"\"";
+	std::string data = "\"aoeu\"\"\\\"quote\"\"#\\\\\\\"\"";
 	XTS_ASSERT_EQUALS(0, tokenize(data.c_str(), data.length(), &t));
 	c = t;
 	CHECK_TOKEN(TOK_STR, "aoeu");
 	CHECK_TOKEN(TOK_STR, "\"quote");
-	CHECK_TOKEN(TOK_STR, "\\\"");
+	CHECK_TOKEN(TOK_STR, "#\\\"");
 	CHECK_EOF();
 
 	free_tokens(t);
@@ -81,6 +81,45 @@ XTS_TEST(TokenizerTests, testValidComment) {
 	std::string data = "#comment \t comment\r\n#comment";
 	XTS_ASSERT_EQUALS(0, tokenize(data.c_str(), data.length(), &t));
 	c = t;
+	CHECK_EOF();
+
+	free_tokens(t);
+}
+
+XTS_TEST(TokenizerTests, testChaining) {
+	struct Token* t;
+	struct Token* c;
+	std::string data = "a1{-2a.;=0Q\"3\"3a}";
+	XTS_ASSERT_EQUALS(0, tokenize(data.c_str(), data.length(), &t));
+	c = t;
+	CHECK_TOKEN(TOK_ID, "a1");
+	CHECK_TOKEN(TOK_LB, "{");
+	CHECK_TOKEN(TOK_INT, "-2");
+	CHECK_TOKEN(TOK_ID, "a.");
+	CHECK_TOKEN(TOK_SEMI, ";");
+	CHECK_TOKEN(TOK_EQ, "=");
+	CHECK_TOKEN(TOK_INT, "0");
+	CHECK_TOKEN(TOK_ID, "Q");
+	CHECK_TOKEN(TOK_STR, "3");
+	CHECK_TOKEN(TOK_INT, "3");
+	CHECK_TOKEN(TOK_ID, "a");
+	CHECK_TOKEN(TOK_RB, "}");
+	CHECK_EOF();
+
+	free_tokens(t);
+}
+
+XTS_TEST(TokenizerTests, testCommentChaining) {
+	struct Token* t;
+	struct Token* c;
+	std::string data = "x#a\nx.#b\n34#c\n0#d\n1#e\n";
+	XTS_ASSERT_EQUALS(0, tokenize(data.c_str(), data.length(), &t));
+	c = t;
+	CHECK_TOKEN(TOK_ID, "x");
+	CHECK_TOKEN(TOK_ID, "x.");
+	CHECK_TOKEN(TOK_INT, "34");
+	CHECK_TOKEN(TOK_INT, "0");
+	CHECK_TOKEN(TOK_INT, "1");
 	CHECK_EOF();
 
 	free_tokens(t);
