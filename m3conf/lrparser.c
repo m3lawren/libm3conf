@@ -4,7 +4,20 @@
 
 #include <assert.h>
 #include <m3conf/tokenizer.h>
+#include <stdarg.h>
 #include <stdlib.h>
+
+static void DEBUG(const char* fmt, ...) {
+#ifdef M3CONF_DEBUG
+	va_list args;
+	va_start(args, fmt);
+	printf("LR: ");
+	vprintf(fmt, args);
+	va_end(args);
+#else
+	(void)fmt;
+#endif
+}
 
 const char* REDUCTIONS[] = {
 	"S     -> STMTS",
@@ -227,17 +240,28 @@ static int action_shift_reduction(int s, int r) {
 
 void parse(struct Token* t) {
 	struct LRStack* s = lrs_create();
+	const char* lastval = NULL;
+	const char* lastid = NULL;
 	lrs_push(s, 0);
 	while (1) {
 		int x;
 		if ((x = action_shift(lrs_peek(s), t->type)) != -1) {
+			if (t->type == TOK_STR || t->type == TOK_INT) {
+				lastval = t->value;
+				DEBUG("val is %s\n", lastval);
+			} else if (t->type == TOK_ID) {
+				lastid = t->value;
+				DEBUG("id is %s\n", lastid);
+			} else if (t->type == TOK_LB) {
+				DEBUG("section\n");
+			} else if (t->type == TOK_EQ) {
+				DEBUG("assignment\n");
+			}
 			lrs_push(s, x);
 			t = t->next;
 			assert(t != NULL);
 		} else if ((x = action_reduce(lrs_peek(s), t->type)) != -1) {
-#ifdef M3CONF_DEBUG
-			printf("LR: %d %s\n", x, REDUCTIONS[x]);
-#endif
+			DEBUG("REDUCTION %d: %s\n", x, REDUCTIONS[x]);
 			switch (x) {
 				case 1:
 				case 3:
@@ -260,9 +284,7 @@ void parse(struct Token* t) {
 			assert(x != -1);
 			lrs_push(s, x);
 		} else if (action_accept(lrs_peek(s), t->type)) {
-#ifdef M3CONF_DEBUG
-			printf("LR: 0 %s\n", REDUCTIONS[0]);
-#endif
+			DEBUG("REDUCTION 0: %s\n", REDUCTIONS[0]);
 			break;
 		} else {
 			assert(0 == 1);
