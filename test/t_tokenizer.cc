@@ -132,6 +132,8 @@ XTS_TEST(TokenizerTests, testInvalidInt) {
 	XTS_ASSERT_EQUALS(2, tokenize(data.c_str(), data.length(), &t));
 	data = "-a";
 	XTS_ASSERT_EQUALS(2, tokenize(data.c_str(), data.length(), &t));
+	data = "-0";
+	XTS_ASSERT_EQUALS(2, tokenize(data.c_str(), data.length(), &t));
 }
 
 XTS_TEST(TokenizerTests, testInvalidStr) {
@@ -151,4 +153,16 @@ XTS_TEST(TokenizerTests, testInvalidId) {
 	struct Token* t;
 	std::string data = ".";
 	XTS_ASSERT_EQUALS(1, tokenize(data.c_str(), data.length(), &t));
+}
+
+XTS_TEST(TokenizerTests, testSingleToken) {
+	struct Token* t;
+	struct Token* c;
+	std::string data = "a";
+	XTS_ASSERT_EQUALS(0, tokenize(data.c_str(), data.length(), &t));
+	c = t;
+	CHECK_TOKEN(TOK_ID, "a");
+	CHECK_EOF();
+
+	free_tokens(t);
 }
