@@ -28,6 +28,15 @@ AC_ARG_ENABLE(
 		[CFLAGS], 
 		["-DM3CONF_DEBUG -Wall -Wextra -Werror -ansi -pedantic -g"])], 
 	[])
+AC_ARG_ENABLE(
+	[full-check], 
+	AC_HELP_STRING(
+		[--enable-full-check], 
+		[Enables full check mode. This is similar to --enable-full-debug, however it turns off debug output and enables optimization to try and catch extra errors.]),
+	[AC_SUBST(
+		[CFLAGS], 
+		["-Wall -Wextra -Werror -ansi -pedantic -g -O2"])], 
+	[])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
