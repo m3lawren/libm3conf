@@ -25,7 +25,27 @@ struct cnode {
 
 struct m3config {
 	struct cnode* data;
+
+	/* used for the parsing functions */
+	struct cnode* parsecur;
 };
+
+static void cnode_destroy(struct cnode* n) {
+	while (n) {
+		struct cnode* x = n;
+		if (x->type == CN_SECTION && x->child) {
+			cnode_destroy(x->child);
+		} else if (x->type == CN_VALUE && x->val) {
+			free(x->val);
+		}
+		free(x->key);
+		n = x->next;
+		x->next = x->child = x->parent = NULL;
+		x->key = x->val = NULL;
+		x->ksz = 0;
+		free(x);
+	}
+}
 
 static const struct cnode* find_key(const struct cnode* start, const char* key) {
 	size_t keyoff = 0;
@@ -65,4 +85,70 @@ int m3conf_get_int(const struct m3config* c, const char* key, int def) {
 		return def;
 	}
 	return atoi(n->val);
+}
+
+/* 
+ * Private functions used during parsing.
+ */
+struct m3config* parse_init() {
+	struct m3config* c = malloc(sizeof(struct m3config));
+	c->data = c->parsecur = NULL;
+	return c;
+}
+
+void parse_destroy(struct m3config* c) {
+	if (c->data) {
+		cnode_destroy(c->data);
+	}
+
+	/* c->parsecur should be pointing to part of c->data, so it's good */
+	c->data = c->parsecur = NULL;
+
+	free(c);
+}
+
+void parse_finalize(struct m3config* c) {
+	c->parsecur = NULL;
+}
+
+void parse_enter_section(struct m3config* c, const char* name) {
+	struct cnode* n = malloc(sizeof(struct cnode));
+	n->type = CN_SECTION;
+	n->ksz = strlen(name);
+	n->key = malloc((n->ksz + 1) * sizeof(char));
+	memcpy(n->key, name, n->ksz + 1);
+	n->parent = c->parsecur;
+	n->child = NULL;
+
+	if (c->parsecur) {
+		n->next = c->parsecur->child;
+		c->parsecur->child = n;
+	} else {
+		/* we're at the top level */
+		n->next = c->data;
+		c->data = n;
+	}
+	c->parsecur = n;
+}
+
+void parse_leave_section(struct m3config* c) {
+	c->parsecur = c->parsecur->parent;
+}
+
+void parse_add_val(struct m3config* c, const char* key, const char* val) {
+	struct cnode* n = malloc(sizeof(struct cnode));
+	n->type = CN_VALUE;
+	n->ksz = strlen(key);
+	n->key = malloc((n->ksz + 1) * sizeof(char));
+	memcpy(n->key, key, n->ksz + 1);
+	n->parent = c->parsecur;
+	n->val = malloc((strlen(val) + 1) * sizeof(char));
+
+	if (c->parsecur) {
+		n->next = c->parsecur->child;
+		c->parsecur->child = n;
+	} else {
+		n->next = c->data;
+		c->data = n;
+	}
 }

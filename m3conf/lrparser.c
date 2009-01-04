@@ -3,10 +3,24 @@
 #include <config.h>
 
 #include <assert.h>
+#include <m3conf/m3config.h>
 #include <m3conf/tokenizer.h>
 #include <stdarg.h>
 #include <stdlib.h>
 
+/* 
+ * Functions declared in m3config.c that are 'private', but needed to generate
+ * config structure while parsing due to our lack of knowledege about struct
+ * m3config.
+ */
+struct m3config* parse_init();
+void             parse_destroy(struct m3config*);
+void             parse_finalize(struct m3config*);
+void             parse_enter_section(struct m3config*, const char*);
+void             parse_leave_section(struct m3config*);
+void             parse_add_val(struct m3config*, const char*, const char*);
+
+/* A little DEBUG function to make output easier. */
 static void DEBUG(const char* fmt, ...) {
 #ifdef M3CONF_DEBUG
 	va_list args;
@@ -240,20 +254,24 @@ static int action_shift_reduction(int s, int r) {
 
 void parse(struct Token* t) {
 	struct LRStack* s = lrs_create();
-	const char* lastval = NULL;
 	const char* lastid = NULL;
+	struct m3config* c = parse_init();
 	lrs_push(s, 0);
 	while (1) {
 		int x;
 		if ((x = action_shift(lrs_peek(s), t->type)) != -1) {
 			if (t->type == TOK_STR || t->type == TOK_INT) {
-				lastval = t->value;
-				DEBUG("val is %s\n", lastval);
+				parse_add_val(c, lastid, t->value);
+				DEBUG("val is %s\n", t->value);
 			} else if (t->type == TOK_ID) {
 				lastid = t->value;
 				DEBUG("id is %s\n", lastid);
 			} else if (t->type == TOK_LB) {
-				DEBUG("section\n");
+				parse_enter_section(c, lastid);
+				DEBUG("push section\n");
+			} else if (t->type == TOK_RB) {
+				parse_leave_section(c);
+				DEBUG("pop section\n");
 			} else if (t->type == TOK_EQ) {
 				DEBUG("assignment\n");
 			}
@@ -291,4 +309,5 @@ void parse(struct Token* t) {
 		}
 	}
 	lrs_destroy(s);
+	parse_destroy(c);
 }
