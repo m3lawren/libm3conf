@@ -1,4 +1,7 @@
 *.a
+*.gcda
+*.gcno
+*.gcov
 *.in
 *.la
 *.lo
