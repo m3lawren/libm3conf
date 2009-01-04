@@ -4,7 +4,7 @@
 
 int main(void) {
 	const char* str = "me {\n"
-	                  "  you.z = 5;\n"
+	                  "  you.z = \"foo\";\n"
 						   "  you {\n"
 							"    _x = 3;\n"
 							"  }\n"
