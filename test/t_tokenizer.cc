@@ -120,3 +120,31 @@ XTS_TEST(TokenizerTests, testValidId) {
 
 	free_tokens(t);
 }
+
+XTS_TEST(TokenizerTests, testValidWhiteSpace) {
+	struct Token* t;
+	struct Token* c;
+	std::string data = " \t\n\r";
+	XTS_ASSERT_EQUALS(0, tokenize(data.c_str(), data.length(), &t));
+	c = t;
+	XTS_ASSERT_DIFFERS(NULL, c);
+	XTS_ASSERT_EQUALS(TOK_EOF, c->type);
+	XTS_ASSERT_EQUALS(std::string(""), c->value);
+	XTS_ASSERT_EQUALS(NULL, c->next);
+
+	free_tokens(t);
+}
+
+XTS_TEST(TokenizerTests, testValidComment) {
+	struct Token* t;
+	struct Token* c;
+	std::string data = "#comment \t comment\r\n#comment";
+	XTS_ASSERT_EQUALS(0, tokenize(data.c_str(), data.length(), &t));
+	c = t;
+	XTS_ASSERT_DIFFERS(NULL, c);
+	XTS_ASSERT_EQUALS(TOK_EOF, c->type);
+	XTS_ASSERT_EQUALS(std::string(""), c->value);
+	XTS_ASSERT_EQUALS(NULL, c->next);
+
+	free_tokens(t);
+}
