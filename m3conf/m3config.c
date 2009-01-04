@@ -14,6 +14,7 @@ struct cnode {
 	/* used for both CN_VALUE and CN_SECTION */
 	char*         key;
 	size_t        ksz;
+	struct cnode* parent;
 
 	/* only used for CN_VALUE */
 	char*         val;
@@ -27,16 +28,25 @@ struct m3config {
 };
 
 static const struct cnode* find_key(const struct cnode* start, const char* key) {
+	size_t keyoff = 0;
 	while (start) {
-		if (start->type == CN_SECTION && strncmp(start->key, key, start->ksz)) {
-			const struct cnode* r = find_key(start, key + (start->ksz + 1));
-			if (r) {
-				return r;
+		if (start->type == CN_SECTION && strncmp(start->key, key + keyoff, start->ksz)) {
+			if (start->child) {
+				start = start->child;
+				keyoff += start->ksz + 1;
 			}
-		} else if (start->type == CN_VALUE && strcmp(start->key, key) == 0) {
+		} else if (start->type == CN_VALUE && strcmp(start->key, key + keyoff) == 0) {
 			return start;
+		} else {
+			if (start->next) {
+				start = start->next;
+			} else {
+				start = start->parent;
+				if (start) {
+					keyoff -= start->ksz + 1;
+				}
+			}
 		}
-		start = start->next;
 	}
 	return NULL;
 }
