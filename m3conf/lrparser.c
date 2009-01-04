@@ -252,7 +252,7 @@ static int action_shift_reduction(int s, int r) {
 	}
 }
 
-void parse(struct Token* t) {
+struct m3config* parse(struct Token* t) {
 	struct LRStack* s = lrs_create();
 	const char* lastid = NULL;
 	struct m3config* c = parse_init();
@@ -309,5 +309,6 @@ void parse(struct Token* t) {
 		}
 	}
 	lrs_destroy(s);
-	parse_destroy(c);
+	parse_finalize(c);
+	return c;
 }

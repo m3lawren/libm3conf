@@ -29,7 +29,7 @@ struct m3config {
 	/* used for the parsing functions */
 	struct cnode* parsecur;
 };
-
+	
 static void cnode_destroy(struct cnode* n) {
 	while (n) {
 		struct cnode* x = n;
@@ -47,13 +47,24 @@ static void cnode_destroy(struct cnode* n) {
 	}
 }
 
+void m3conf_free(struct m3config* c) {
+	if (c->data) {
+		cnode_destroy(c->data);
+	}
+
+	/* c->parsecur should be pointing to part of c->data, so it's good */
+	c->data = c->parsecur = NULL;
+
+	free(c);
+}
+
 static const struct cnode* find_key(const struct cnode* start, const char* key) {
 	size_t keyoff = 0;
 	while (start) {
-		if (start->type == CN_SECTION && strncmp(start->key, key + keyoff, start->ksz)) {
+		if (start->type == CN_SECTION && key[keyoff + start->ksz] == '.' && strncmp(start->key, key + keyoff, start->ksz) == 0) {
 			if (start->child) {
-				start = start->child;
 				keyoff += start->ksz + 1;
+				start = start->child;
 			}
 		} else if (start->type == CN_VALUE && strcmp(start->key, key + keyoff) == 0) {
 			return start;
@@ -64,6 +75,7 @@ static const struct cnode* find_key(const struct cnode* start, const char* key) 
 				start = start->parent;
 				if (start) {
 					keyoff -= start->ksz + 1;
+					start = start->next;
 				}
 			}
 		}
@@ -97,14 +109,7 @@ struct m3config* parse_init() {
 }
 
 void parse_destroy(struct m3config* c) {
-	if (c->data) {
-		cnode_destroy(c->data);
-	}
-
-	/* c->parsecur should be pointing to part of c->data, so it's good */
-	c->data = c->parsecur = NULL;
-
-	free(c);
+	m3conf_free(c);
 }
 
 void parse_finalize(struct m3config* c) {
@@ -143,6 +148,7 @@ void parse_add_val(struct m3config* c, const char* key, const char* val) {
 	memcpy(n->key, key, n->ksz + 1);
 	n->parent = c->parsecur;
 	n->val = malloc((strlen(val) + 1) * sizeof(char));
+	memcpy(n->val, val, strlen(val) + 1);
 
 	if (c->parsecur) {
 		n->next = c->parsecur->child;

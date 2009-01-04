@@ -6,8 +6,9 @@ extern "C" {
 #endif
 
 struct Token;
+struct m3config;
 
-void parse(struct Token*);
+struct m3config* parse(struct Token*);
 
 #ifdef __cplusplus
 }

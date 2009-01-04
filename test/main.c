@@ -1,3 +1,4 @@
+#include <m3conf/m3config.h>
 #include <m3conf/parser.h>
 #include <m3conf/tokenizer.h>
 #include <string.h>
@@ -12,6 +13,7 @@ int main(void) {
 							"}";
 	struct Token* t;
 	struct Token* c;
+	struct m3config* conf;
 	size_t ret = tokenize(str, strlen(str), &t);
 	if (ret != 0) {
 		size_t i;
@@ -29,7 +31,13 @@ int main(void) {
 		printf("\n");
 		c = c->next;
 	}
-	parse(t);
+	conf = parse(t);
 	free_tokens(t);
+
+	printf("me.you.z = %s\n", m3conf_get_str(conf, "me.you.z", "NULL"));
+	printf("me.you._x = %d\n", m3conf_get_int(conf, "me.you._x", 0));
+	printf("me.y_bleh = %d\n", m3conf_get_int(conf, "me.y_bleh", 0));
+
+	m3conf_free(conf);
 	return 0;
 }

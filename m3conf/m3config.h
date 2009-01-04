@@ -7,6 +7,8 @@ extern "C" {
 
 struct m3config;
 
+void m3conf_free(struct m3config*);
+
 const char* m3conf_get_str(const struct m3config*, const char* key, const char* def);
 int         m3conf_get_int(const struct m3config*, const char* key, int def);
 
