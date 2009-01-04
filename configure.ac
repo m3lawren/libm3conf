@@ -13,8 +13,15 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_TYPE_SIZE_T
 
-AC_SUBST(CFLAGS_WARNLEVEL, ["-Wall -Werror -Wextra"])
-AC_SUBST(CFLAGS_PICKINESS, ["-std=c99 -pedantic"])
+AC_ARG_ENABLE(
+	[full-debug], 
+	AC_HELP_STRING(
+		[--enable-full-debug], 
+		[Enables full debug mode, which clobbers CFLAGS and CXXFLAGS, and will likely break on non-GCC compilers.]), 
+	[AC_SUBST(
+		[CFLAGS], 
+		["-DM3CONF_DEBUG -Wall -Wextra -Werror -ansi -pedantic -g"])], 
+	[])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])

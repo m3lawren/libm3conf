@@ -7,5 +7,3 @@ libm3conf_la_SOURCES = \
 	parser.h \
 	tokenizer.c \
 	tokenizer.h
-
-AM_CFLAGS = $(CFLAGS_WARNLEVEL) $(CFLAGS_PICKINESS)
