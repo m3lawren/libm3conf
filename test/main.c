@@ -8,9 +8,11 @@ int main(void) {
 	                  "  you.z = \"foo\";\n"
 						   "  you {\n"
 							"    _x = 3;\n"
+							"    z = \"qq\";\n"
 							"  }\n"
 							"  y_bleh = 4;\n"
-							"}";
+							"}\n"
+							"me.you.z = \"bleh\";\n";
 	struct Token* t;
 	struct Token* c;
 	struct m3config* conf;
