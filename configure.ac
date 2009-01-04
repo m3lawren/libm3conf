@@ -39,6 +39,16 @@ AC_ARG_ENABLE(
 	 	[CXXFLAGS],
 		["-Wall -Wextra -Werror -ansi -pedantic -g -O2"])],
 	[])
+AC_ARG_ENABLE(
+	[coverage],
+	AS_HELP_STRING([--enable-coverage],[Enables coverage checking. This clobbers CFLAGS and CXXFLAGS.]),
+	[AC_SUBST(
+		[CFLAGS],
+		["-ftest-coverage -fprofile-arcs -g"])
+	 AC_SUBST(
+	 	[CXXFLAGS],
+		["-ftest-coverage -fprofile-arcs -g"])],
+	[])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
