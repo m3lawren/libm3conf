@@ -13,3 +13,14 @@ XTS_TEST(ParserTests, testEmptyString) {
 	m3conf_free(c);
 	free_tokens(t);
 }
+
+XTS_TEST(ParserTests, testBigValid) {
+	struct Token* t;
+	struct m3config* c;
+	std::string data = "a=1;b=\"3\";z{y{x{c=\"a\";w{d=0;}e=-1;}}f=\"qq\";}";
+	XTS_ASSERT_EQUALS(0, tokenize(data.c_str(), data.size(), &t));
+	c = parse(t);
+
+	m3conf_free(c);
+	free_tokens(t);
+}
