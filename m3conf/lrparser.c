@@ -79,6 +79,7 @@ static int action_reduce(int s, enum token_t t) {
 		case 0:
 			switch (t) {
 				case TOK_EOF:
+					return 2;
 				case TOK_ID:
 					return 2;
 				default:
@@ -87,7 +88,9 @@ static int action_reduce(int s, enum token_t t) {
 		case 3:
 			switch (t) {
 				case TOK_EOF:
+					return 1;
 				case TOK_RB:
+					return 1;
 				case TOK_ID:
 					return 1;
 				default:
@@ -96,6 +99,7 @@ static int action_reduce(int s, enum token_t t) {
 		case 5:
 			switch (t) {
 				case TOK_RB:
+					return 2;
 				case TOK_ID:
 					return 2;
 				default:
@@ -118,7 +122,9 @@ static int action_reduce(int s, enum token_t t) {
 		case 10:
 			switch (t) {
 				case TOK_EOF:
+					return 3;
 				case TOK_RB:
+					return 3;
 				case TOK_ID:
 					return 3;
 				default:
@@ -127,7 +133,9 @@ static int action_reduce(int s, enum token_t t) {
 		case 11:
 			switch (t) {
 				case TOK_EOF:
+					return 4;
 				case TOK_RB:
+					return 4;
 				case TOK_ID:
 					return 4;
 				default:
@@ -205,6 +213,7 @@ static int action_shift_reduction(int s, int r) {
 		case 0:
 			switch (r) {
 				case 1:
+					return 1;
 				case 2:
 					return 1;
 				default:
@@ -213,6 +222,7 @@ static int action_shift_reduction(int s, int r) {
 		case 2:
 			switch (r) {
 				case 3:
+					return 3;
 				case 4:
 					return 3;
 				default:
@@ -221,6 +231,7 @@ static int action_shift_reduction(int s, int r) {
 		case 4:
 			switch (r) {
 				case 5:
+					return 6;
 				case 6:
 					return 6;
 				default:
@@ -229,6 +240,7 @@ static int action_shift_reduction(int s, int r) {
 		case 5:
 			switch (r) {
 				case 1:
+					return 9;
 				case 2:
 					return 9;
 				default:
