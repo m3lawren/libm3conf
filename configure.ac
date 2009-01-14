@@ -24,10 +24,10 @@ AC_ARG_ENABLE(
 	AS_HELP_STRING([--enable-full-debug],[Enables full debug mode, which clobbers CFLAGS and CXXFLAGS, and will likely break on non-GCC compilers.]), 
 	[AC_SUBST(
 		[CFLAGS], 
-		["-DM3CONF_DEBUG -Wall -Wextra -Werror -ansi -pedantic -g"])
+		["-Wall -Wextra -Werror -ansi -pedantic -g"])
 	 AC_SUBST(
 	 	[CXXFLAGS],
-		["-DM3CONF_DEBUG -Wall -Wextra -Werror -ansi -pedantic -g"])],
+		["-Wall -Wextra -Werror -ansi -pedantic -g"])],
 	[])
 AC_ARG_ENABLE(
 	[full-check], 
