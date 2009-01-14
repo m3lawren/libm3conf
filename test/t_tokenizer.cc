@@ -1,4 +1,4 @@
-#include <m3conf/tokenizer.h>
+#include <m3conf/m3conf_tokenizer.h>
 #include <test/XTest.h>
 
 #define CHECK_TOKEN(toktype, val) XTS_ASSERT_EQUALS(false, NULL == c); XTS_ASSERT_EQUALS(toktype, c->type); XTS_ASSERT_EQUALS(std::string(val), c->value); c = c->next;

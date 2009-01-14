@@ -1,10 +1,10 @@
-#include <m3conf/parser.h>
+#include <m3conf/m3conf_parser.h>
 
 #include <config.h>
 
 #include <assert.h>
 #include <m3conf/m3config.h>
-#include <m3conf/tokenizer.h>
+#include <m3conf/m3conf_tokenizer.h>
 #include <stdarg.h>
 #include <stdlib.h>
 

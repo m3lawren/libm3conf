@@ -1,4 +1,4 @@
-#include <m3conf/tokenizer.h>
+#include <m3conf/m3conf_tokenizer.h>
 
 #include <assert.h>
 #include <stdlib.h>

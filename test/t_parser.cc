@@ -1,6 +1,6 @@
 #include <m3conf/m3config.h>
-#include <m3conf/parser.h>
-#include <m3conf/tokenizer.h>
+#include <m3conf/m3conf_parser.h>
+#include <m3conf/m3conf_tokenizer.h>
 #include <test/XTest.h>
 
 XTS_TEST(ParserTests, testEmptyString) {
