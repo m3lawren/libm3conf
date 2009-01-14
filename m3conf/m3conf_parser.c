@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-struct m3config* parse(struct Token* t)
+struct m3config* m3conf_parse(struct m3conf_token* t)
 {
 	(void)t;
 	return NULL;
