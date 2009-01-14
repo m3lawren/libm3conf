@@ -4,7 +4,7 @@
 #define CHECK_TOKEN(toktype, val) XTS_ASSERT_EQUALS(false, NULL == c); XTS_ASSERT_EQUALS(toktype, c->type); XTS_ASSERT_EQUALS(std::string(val), c->value); c = c->next;
 #define CHECK_EOF() CHECK_TOKEN(TOK_EOF, ""); XTS_ASSERT_EQUALS(true, NULL == c);
 
-XTS_TEST(m3conf_tokenizerTests, testSingleChars) {
+XTS_TEST(TokenizerTests, testSingleChars) {
 	struct m3conf_token* t;
 	struct m3conf_token* c;
 	std::string data = "{}=;";
@@ -19,7 +19,7 @@ XTS_TEST(m3conf_tokenizerTests, testSingleChars) {
 	m3conf_free_tokens(t);
 }
 
-XTS_TEST(m3conf_tokenizerTests, testValidInt) {
+XTS_TEST(TokenizerTests, testValidInt) {
 	struct m3conf_token* t;
 	struct m3conf_token* c;
 	std::string data = "01234-44";
@@ -33,7 +33,7 @@ XTS_TEST(m3conf_tokenizerTests, testValidInt) {
 	m3conf_free_tokens(t);
 }
 
-XTS_TEST(m3conf_tokenizerTests, testValidStr) {
+XTS_TEST(TokenizerTests, testValidStr) {
 	struct m3conf_token* t;
 	struct m3conf_token* c;
 	std::string data = "\"aoeu\"\"\\\"quote\"\"#\\\\\\\"\"";
@@ -47,7 +47,7 @@ XTS_TEST(m3conf_tokenizerTests, testValidStr) {
 	m3conf_free_tokens(t);
 }
 
-XTS_TEST(m3conf_tokenizerTests, testValidId) {
+XTS_TEST(TokenizerTests, testValidId) {
 	struct m3conf_token* t;
 	struct m3conf_token* c;
 	std::string data = "aoeu AOEU a1 section _ _._";
@@ -64,7 +64,7 @@ XTS_TEST(m3conf_tokenizerTests, testValidId) {
 	m3conf_free_tokens(t);
 }
 
-XTS_TEST(m3conf_tokenizerTests, testValidWhiteSpace) {
+XTS_TEST(TokenizerTests, testValidWhiteSpace) {
 	struct m3conf_token* t;
 	struct m3conf_token* c;
 	std::string data = " \t\n\r";
@@ -75,7 +75,7 @@ XTS_TEST(m3conf_tokenizerTests, testValidWhiteSpace) {
 	m3conf_free_tokens(t);
 }
 
-XTS_TEST(m3conf_tokenizerTests, testValidComment) {
+XTS_TEST(TokenizerTests, testValidComment) {
 	struct m3conf_token* t;
 	struct m3conf_token* c;
 	std::string data = "#comment \t comment\r\n#comment";
@@ -86,7 +86,7 @@ XTS_TEST(m3conf_tokenizerTests, testValidComment) {
 	m3conf_free_tokens(t);
 }
 
-XTS_TEST(m3conf_tokenizerTests, testChaining) {
+XTS_TEST(TokenizerTests, testChaining) {
 	struct m3conf_token* t;
 	struct m3conf_token* c;
 	std::string data = "a1{-2a.;=0Q\"3\"3a}";
@@ -109,7 +109,7 @@ XTS_TEST(m3conf_tokenizerTests, testChaining) {
 	m3conf_free_tokens(t);
 }
 
-XTS_TEST(m3conf_tokenizerTests, testCommentChaining) {
+XTS_TEST(TokenizerTests, testCommentChaining) {
 	struct m3conf_token* t;
 	struct m3conf_token* c;
 	std::string data = "x#a\nx.#b\n34#c\n0#d\n1#e\n";
@@ -125,7 +125,7 @@ XTS_TEST(m3conf_tokenizerTests, testCommentChaining) {
 	m3conf_free_tokens(t);
 }
 
-XTS_TEST(m3conf_tokenizerTests, testInvalidInt) {
+XTS_TEST(TokenizerTests, testInvalidInt) {
 	struct m3conf_token* t;
 	std::string data;
 	data = "-";
@@ -136,7 +136,7 @@ XTS_TEST(m3conf_tokenizerTests, testInvalidInt) {
 	XTS_ASSERT_EQUALS(2, m3conf_tokenize(data.c_str(), data.length(), &t));
 }
 
-XTS_TEST(m3conf_tokenizerTests, testInvalidStr) {
+XTS_TEST(TokenizerTests, testInvalidStr) {
 	struct m3conf_token* t;
 	std::string data;
 	data = "\"";
@@ -149,13 +149,13 @@ XTS_TEST(m3conf_tokenizerTests, testInvalidStr) {
 	XTS_ASSERT_EQUALS(6, m3conf_tokenize(data.c_str(), data.length(), &t));
 }
 
-XTS_TEST(m3conf_tokenizerTests, testInvalidId) {
+XTS_TEST(TokenizerTests, testInvalidId) {
 	struct m3conf_token* t;
 	std::string data = ".";
 	XTS_ASSERT_EQUALS(1, m3conf_tokenize(data.c_str(), data.length(), &t));
 }
 
-XTS_TEST(m3conf_tokenizerTests, testSinglem3conf_token) {
+XTS_TEST(TokenizerTests, testSingleTokenizer) {
 	struct m3conf_token* t;
 	struct m3conf_token* c;
 	std::string data = "a";
@@ -165,4 +165,8 @@ XTS_TEST(m3conf_tokenizerTests, testSinglem3conf_token) {
 	CHECK_EOF();
 
 	m3conf_free_tokens(t);
+}
+
+XTS_TEST(TokenizerTests, testNullDestroy) {
+	m3conf_free_tokens(NULL);
 }

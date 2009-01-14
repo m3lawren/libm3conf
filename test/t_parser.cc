@@ -35,3 +35,7 @@ XTS_TEST(ParserTests, testSimpleAssignment) {
 	m3conf_free(c);
 	m3conf_free_tokens(t);
 }
+
+XTS_TEST(ParserTests, testNullDestroy) {
+	m3conf_free(NULL);
+}
