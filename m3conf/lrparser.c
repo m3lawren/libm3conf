@@ -20,19 +20,6 @@ void             parse_enter_section(struct m3config*, const char*);
 void             parse_leave_section(struct m3config*);
 void             parse_add_val(struct m3config*, const char*, const char*);
 
-/* A little DEBUG function to make output easier. */
-static void DEBUG(const char* fmt, ...) {
-#ifdef M3CONF_DEBUG
-	va_list args;
-	va_start(args, fmt);
-	printf("LR: ");
-	vprintf(fmt, args);
-	va_end(args);
-#else
-	(void)fmt;
-#endif
-}
-
 const char* REDUCTIONS[] = {
 	"S     -> STMTS",
 	"STMTS -> STMTS id STMT",
@@ -92,6 +79,7 @@ static int action_reduce(int s, enum token_t t) {
 		case 0:
 			switch (t) {
 				case TOK_EOF:
+					return 2;
 				case TOK_ID:
 					return 2;
 				default:
@@ -100,7 +88,9 @@ static int action_reduce(int s, enum token_t t) {
 		case 3:
 			switch (t) {
 				case TOK_EOF:
+					return 1;
 				case TOK_RB:
+					return 1;
 				case TOK_ID:
 					return 1;
 				default:
@@ -109,6 +99,7 @@ static int action_reduce(int s, enum token_t t) {
 		case 5:
 			switch (t) {
 				case TOK_RB:
+					return 2;
 				case TOK_ID:
 					return 2;
 				default:
@@ -131,7 +122,9 @@ static int action_reduce(int s, enum token_t t) {
 		case 10:
 			switch (t) {
 				case TOK_EOF:
+					return 3;
 				case TOK_RB:
+					return 3;
 				case TOK_ID:
 					return 3;
 				default:
@@ -140,7 +133,9 @@ static int action_reduce(int s, enum token_t t) {
 		case 11:
 			switch (t) {
 				case TOK_EOF:
+					return 4;
 				case TOK_RB:
+					return 4;
 				case TOK_ID:
 					return 4;
 				default:
@@ -218,6 +213,7 @@ static int action_shift_reduction(int s, int r) {
 		case 0:
 			switch (r) {
 				case 1:
+					return 1;
 				case 2:
 					return 1;
 				default:
@@ -226,6 +222,7 @@ static int action_shift_reduction(int s, int r) {
 		case 2:
 			switch (r) {
 				case 3:
+					return 3;
 				case 4:
 					return 3;
 				default:
@@ -234,6 +231,7 @@ static int action_shift_reduction(int s, int r) {
 		case 4:
 			switch (r) {
 				case 5:
+					return 6;
 				case 6:
 					return 6;
 				default:
@@ -242,6 +240,7 @@ static int action_shift_reduction(int s, int r) {
 		case 5:
 			switch (r) {
 				case 1:
+					return 9;
 				case 2:
 					return 9;
 				default:
@@ -262,24 +261,18 @@ struct m3config* parse(struct Token* t) {
 		if ((x = action_shift(lrs_peek(s), t->type)) != -1) {
 			if (t->type == TOK_STR || t->type == TOK_INT) {
 				parse_add_val(c, lastid, t->value);
-				DEBUG("val is %s\n", t->value);
 			} else if (t->type == TOK_ID) {
 				lastid = t->value;
-				DEBUG("id is %s\n", lastid);
 			} else if (t->type == TOK_LB) {
 				parse_enter_section(c, lastid);
-				DEBUG("push section\n");
 			} else if (t->type == TOK_RB) {
 				parse_leave_section(c);
-				DEBUG("pop section\n");
 			} else if (t->type == TOK_EQ) {
-				DEBUG("assignment\n");
 			}
 			lrs_push(s, x);
 			t = t->next;
 			assert(t != NULL);
 		} else if ((x = action_reduce(lrs_peek(s), t->type)) != -1) {
-			DEBUG("REDUCTION %d: %s\n", x, REDUCTIONS[x]);
 			switch (x) {
 				case 1:
 				case 3:
@@ -302,7 +295,6 @@ struct m3config* parse(struct Token* t) {
 			assert(x != -1);
 			lrs_push(s, x);
 		} else if (action_accept(lrs_peek(s), t->type)) {
-			DEBUG("REDUCTION 0: %s\n", REDUCTIONS[0]);
 			break;
 		} else {
 			assert(0 == 1);
