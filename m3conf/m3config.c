@@ -48,6 +48,10 @@ static void m3conf_cnode_destroy(struct m3conf_cnode* n) {
 }
 
 void m3conf_free(struct m3config* c) {
+	if (!c) {
+		return;
+	}
+
 	if (c->data) {
 		m3conf_cnode_destroy(c->data);
 	}
