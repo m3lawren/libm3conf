@@ -8,7 +8,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdio.h>
 
-enum token_t {
+enum m3conf_token_t {
 	TOK_ID,
 	TOK_STR,
 	TOK_INT,
@@ -19,18 +19,18 @@ enum token_t {
 	TOK_EOF
 };
 
-extern const char* const TOK_NAMES[];
+extern const char* const M3CONF_TOK_NAMES[];
 
-struct Token {
-	struct Token* next;
-	char*         value;
-	size_t        length;
-	enum token_t  type;
+struct m3conf_token {
+	struct m3conf_token* next;
+	char*         			value;
+	size_t        			length;
+	enum m3conf_token_t  type;
 };
 
-size_t tokenize(const char*, size_t, struct Token**);
+size_t m3conf_tokenize(const char*, size_t, struct m3conf_token**);
 
-void free_tokens(struct Token*);
+void m3conf_free_tokens(struct m3conf_token*);
 
 #ifdef __cplusplus
 }

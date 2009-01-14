@@ -5,10 +5,10 @@
 extern "C" {
 #endif
 
-struct Token;
+struct m3conf_token;
 struct m3config;
 
-struct m3config* parse(struct Token*);
+struct m3config* m3conf_parse(struct m3conf_token*);
 
 #ifdef __cplusplus
 }

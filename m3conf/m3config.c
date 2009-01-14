@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct cnode {
-	struct cnode* next;
+struct m3conf_cnode {
+	struct m3conf_cnode* next;
 
 	enum {
 		CN_SECTION,
@@ -14,27 +14,27 @@ struct cnode {
 	/* used for both CN_VALUE and CN_SECTION */
 	char*         key;
 	size_t        ksz;
-	struct cnode* parent;
+	struct m3conf_cnode* parent;
 
 	/* only used for CN_VALUE */
 	char*         val;
 
 	/* only used for CN_SECTION */
-	struct cnode* child;
+	struct m3conf_cnode* child;
 };
 
 struct m3config {
-	struct cnode* data;
+	struct m3conf_cnode* data;
 
 	/* used for the parsing functions */
-	struct cnode* parsecur;
+	struct m3conf_cnode* parsecur;
 };
 	
-static void cnode_destroy(struct cnode* n) {
+static void m3conf_cnode_destroy(struct m3conf_cnode* n) {
 	while (n) {
-		struct cnode* x = n;
+		struct m3conf_cnode* x = n;
 		if (x->type == CN_SECTION && x->child) {
-			cnode_destroy(x->child);
+			m3conf_cnode_destroy(x->child);
 		} else if (x->type == CN_VALUE && x->val) {
 			free(x->val);
 		}
@@ -49,7 +49,7 @@ static void cnode_destroy(struct cnode* n) {
 
 void m3conf_free(struct m3config* c) {
 	if (c->data) {
-		cnode_destroy(c->data);
+		m3conf_cnode_destroy(c->data);
 	}
 
 	/* c->parsecur should be pointing to part of c->data, so it's good */
@@ -58,7 +58,7 @@ void m3conf_free(struct m3config* c) {
 	free(c);
 }
 
-static const struct cnode* find_key(const struct cnode* start, const char* key) {
+static const struct m3conf_cnode* m3conf_find_key(const struct m3conf_cnode* start, const char* key) {
 	size_t keyoff = 0;
 	while (start) {
 		if (start->type == CN_SECTION && key[keyoff + start->ksz] == '.' && strncmp(start->key, key + keyoff, start->ksz) == 0) {
@@ -84,7 +84,7 @@ static const struct cnode* find_key(const struct cnode* start, const char* key) 
 }
 
 const char* m3conf_get_str(const struct m3config* c, const char* key, const char* def) {
-	const struct cnode* n = find_key(c->data, key);
+	const struct m3conf_cnode* n = m3conf_find_key(c->data, key);
 	if (!n) {
 		return def;
 	}
@@ -92,7 +92,7 @@ const char* m3conf_get_str(const struct m3config* c, const char* key, const char
 }
 
 int m3conf_get_int(const struct m3config* c, const char* key, int def) {
-	const struct cnode* n = find_key(c->data, key);
+	const struct m3conf_cnode* n = m3conf_find_key(c->data, key);
 	if (!n) {
 		return def;
 	}
@@ -102,22 +102,22 @@ int m3conf_get_int(const struct m3config* c, const char* key, int def) {
 /* 
  * Private functions used during parsing.
  */
-struct m3config* parse_init() {
+struct m3config* m3conf_parse_init() {
 	struct m3config* c = malloc(sizeof(struct m3config));
 	c->data = c->parsecur = NULL;
 	return c;
 }
 
-void parse_destroy(struct m3config* c) {
+void m3conf_parse_destroy(struct m3config* c) {
 	m3conf_free(c);
 }
 
-void parse_finalize(struct m3config* c) {
+void m3conf_parse_finalize(struct m3config* c) {
 	c->parsecur = NULL;
 }
 
-void parse_enter_section(struct m3config* c, const char* name) {
-	struct cnode* n = malloc(sizeof(struct cnode));
+void m3conf_parse_enter_section(struct m3config* c, const char* name) {
+	struct m3conf_cnode* n = malloc(sizeof(struct m3conf_cnode));
 	n->type = CN_SECTION;
 	n->ksz = strlen(name);
 	n->key = malloc((n->ksz + 1) * sizeof(char));
@@ -136,12 +136,12 @@ void parse_enter_section(struct m3config* c, const char* name) {
 	c->parsecur = n;
 }
 
-void parse_leave_section(struct m3config* c) {
+void m3conf_parse_leave_section(struct m3config* c) {
 	c->parsecur = c->parsecur->parent;
 }
 
-void parse_add_val(struct m3config* c, const char* key, const char* val) {
-	struct cnode* n = malloc(sizeof(struct cnode));
+void m3conf_parse_add_val(struct m3config* c, const char* key, const char* val) {
+	struct m3conf_cnode* n = malloc(sizeof(struct m3conf_cnode));
 	n->type = CN_VALUE;
 	n->ksz = strlen(key);
 	n->key = malloc((n->ksz + 1) * sizeof(char));

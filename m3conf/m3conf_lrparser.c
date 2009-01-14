@@ -13,12 +13,12 @@
  * config structure while parsing due to our lack of knowledege about struct
  * m3config.
  */
-struct m3config* parse_init();
-void             parse_destroy(struct m3config*);
-void             parse_finalize(struct m3config*);
-void             parse_enter_section(struct m3config*, const char*);
-void             parse_leave_section(struct m3config*);
-void             parse_add_val(struct m3config*, const char*, const char*);
+struct m3config* m3conf_parse_init();
+void             m3conf_parse_destroy(struct m3config*);
+void             m3conf_parse_finalize(struct m3config*);
+void             m3conf_parse_enter_section(struct m3config*, const char*);
+void             m3conf_parse_leave_section(struct m3config*);
+void             m3conf_parse_add_val(struct m3config*, const char*, const char*);
 
 const char* REDUCTIONS[] = {
 	"S     -> STMTS",
@@ -30,26 +30,26 @@ const char* REDUCTIONS[] = {
 	"VALUE -> str"
 };
 
-struct LRStack {
+struct m3conf_lrstack {
 	int* d;
 	size_t c;
 	size_t n;
 };
 
-static struct LRStack* lrs_create() {
-	struct LRStack* s = malloc(sizeof(struct LRStack));
+static struct m3conf_lrstack* m3conf_lrs_create() {
+	struct m3conf_lrstack* s = malloc(sizeof(struct m3conf_lrstack));
 	s->d = NULL;
 	s->c = s->n = 0;
 
 	return s;
 }
 
-static void lrs_destroy(struct LRStack* s) {
+static void m3conf_lrs_destroy(struct m3conf_lrstack* s) {
 	free(s->d);
 	free(s);
 }
 
-static void lrs_push(struct LRStack* s, int v) {
+static void m3conf_lrs_push(struct m3conf_lrstack* s, int v) {
 	if (s->c == s->n) {
 		if (s->c) {
 			s->c *= 2;
@@ -62,19 +62,19 @@ static void lrs_push(struct LRStack* s, int v) {
 	s->d[s->n++] = v;
 }
 
-static int lrs_peek(const struct LRStack* s) {
+static int m3conf_lrs_peek(const struct m3conf_lrstack* s) {
 	return s->d[s->n - 1];
 }
 
-static void lrs_pop(struct LRStack* s) {
+static void m3conf_lrs_pop(struct m3conf_lrstack* s) {
 	s->n--;
 }
 
-static int lrs_empty(const struct LRStack* s) {
+static int m3conf_lrs_empty(const struct m3conf_lrstack* s) {
 	return s->n == 0;
 }
 
-static int action_reduce(int s, enum token_t t) {
+static int m3conf_action_reduce(int s, enum m3conf_token_t t) {
 	switch (s) {
 		case 0:
 			switch (t) {
@@ -146,7 +146,7 @@ static int action_reduce(int s, enum token_t t) {
 	}
 }
 
-static int action_shift(int s, enum token_t t) {
+static int m3conf_action_shift(int s, enum m3conf_token_t t) {
 	switch (s) {
 		case 1:
 			switch (t) {
@@ -194,7 +194,7 @@ static int action_shift(int s, enum token_t t) {
 	}
 }
 
-static int action_accept(int s, enum token_t t) {
+static int m3conf_action_accept(int s, enum m3conf_token_t t) {
 	switch (s) {
 		case 1:
 			switch (t) {
@@ -208,7 +208,7 @@ static int action_accept(int s, enum token_t t) {
 	}
 }
 
-static int action_shift_reduction(int s, int r) {
+static int m3conf_action_shift_reduction(int s, int r) {
 	switch (s) {
 		case 0:
 			switch (r) {
@@ -251,56 +251,56 @@ static int action_shift_reduction(int s, int r) {
 	}
 }
 
-struct m3config* parse(struct Token* t) {
-	struct LRStack* s = lrs_create();
+struct m3config* m3conf_parse(struct m3conf_token* t) {
+	struct m3conf_lrstack* s = m3conf_lrs_create();
 	const char* lastid = NULL;
-	struct m3config* c = parse_init();
-	lrs_push(s, 0);
+	struct m3config* c = m3conf_parse_init();
+	m3conf_lrs_push(s, 0);
 	while (1) {
 		int x;
-		if ((x = action_shift(lrs_peek(s), t->type)) != -1) {
+		if ((x = m3conf_action_shift(m3conf_lrs_peek(s), t->type)) != -1) {
 			if (t->type == TOK_STR || t->type == TOK_INT) {
-				parse_add_val(c, lastid, t->value);
+				m3conf_parse_add_val(c, lastid, t->value);
 			} else if (t->type == TOK_ID) {
 				lastid = t->value;
 			} else if (t->type == TOK_LB) {
-				parse_enter_section(c, lastid);
+				m3conf_parse_enter_section(c, lastid);
 			} else if (t->type == TOK_RB) {
-				parse_leave_section(c);
+				m3conf_parse_leave_section(c);
 			} else if (t->type == TOK_EQ) {
 			}
-			lrs_push(s, x);
+			m3conf_lrs_push(s, x);
 			t = t->next;
 			assert(t != NULL);
-		} else if ((x = action_reduce(lrs_peek(s), t->type)) != -1) {
+		} else if ((x = m3conf_action_reduce(m3conf_lrs_peek(s), t->type)) != -1) {
 			switch (x) {
 				case 1:
 				case 3:
 				case 4:
-					lrs_pop(s);
-					assert(!lrs_empty(s));
-					lrs_pop(s);
-					assert(!lrs_empty(s));
+					m3conf_lrs_pop(s);
+					assert(!m3conf_lrs_empty(s));
+					m3conf_lrs_pop(s);
+					assert(!m3conf_lrs_empty(s));
 				case 0:
 				case 5:
 				case 6:
-					lrs_pop(s);
-					assert(!lrs_empty(s));
+					m3conf_lrs_pop(s);
+					assert(!m3conf_lrs_empty(s));
 				case 2:
 					break;
 				default:
 					assert(1 == 0);
 			}
-			x = action_shift_reduction(lrs_peek(s), x);
+			x = m3conf_action_shift_reduction(m3conf_lrs_peek(s), x);
 			assert(x != -1);
-			lrs_push(s, x);
-		} else if (action_accept(lrs_peek(s), t->type)) {
+			m3conf_lrs_push(s, x);
+		} else if (m3conf_action_accept(m3conf_lrs_peek(s), t->type)) {
 			break;
 		} else {
 			assert(0 == 1);
 		}
 	}
-	lrs_destroy(s);
-	parse_finalize(c);
+	m3conf_lrs_destroy(s);
+	m3conf_parse_finalize(c);
 	return c;
 }

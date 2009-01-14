@@ -22,7 +22,7 @@ const char* const WS    = " \t\r\n";
 
 const char* const SECTION = "section";
 
-const char* const TOK_NAMES[] = {
+const char* const M3CONF_TOK_NAMES[] = {
 	"TOK_ID",
 	"TOK_STR",
 	"TOK_INT",
@@ -33,7 +33,7 @@ const char* const TOK_NAMES[] = {
 	"TOK_EOF"
 };
 
-static size_t clean_string(const char* s, size_t n, char** buf) {
+static size_t m3conf_clean_string(const char* s, size_t n, char** buf) {
 	const char* end = s + n - 1;
 	const char* r = s + 1;
 	char* w;
@@ -60,10 +60,10 @@ static size_t clean_string(const char* s, size_t n, char** buf) {
 	return sz;
 }
 
-static struct Token* create_token_impl(enum token_t t) {
-	struct Token* tok = NULL;
+static struct m3conf_token* m3conf_create_token_impl(enum m3conf_token_t t) {
+	struct m3conf_token* tok = NULL;
 
-	tok = malloc(sizeof(struct Token));
+	tok = malloc(sizeof(struct m3conf_token));
 	tok->next = NULL;
 	tok->value = NULL;
 	tok->length = 0;
@@ -72,15 +72,15 @@ static struct Token* create_token_impl(enum token_t t) {
 	return tok;
 }
 
-static struct Token* create_string_token(const char* s, size_t n) {
-	struct Token* tok = create_token_impl(TOK_STR);
-	tok->length = clean_string(s, n, &tok->value);
+static struct m3conf_token* m3conf_create_string_token(const char* s, size_t n) {
+	struct m3conf_token* tok = m3conf_create_token_impl(TOK_STR);
+	tok->length = m3conf_clean_string(s, n, &tok->value);
 
 	return tok;
 }
 
-static struct Token* create_token(enum token_t t, const char* s, size_t n) {
-	struct Token* tok = create_token_impl(t);
+static struct m3conf_token* m3conf_create_token(enum m3conf_token_t t, const char* s, size_t n) {
+	struct m3conf_token* tok = m3conf_create_token_impl(t);
 
 	tok->value = malloc((n + 1) * sizeof(char));
 
@@ -90,13 +90,13 @@ static struct Token* create_token(enum token_t t, const char* s, size_t n) {
 	return tok;
 }
 
-size_t tokenize(const char* s, size_t n, struct Token** ret) {
+size_t m3conf_tokenize(const char* s, size_t n, struct m3conf_token** ret) {
 	enum state_t state = ST_INIT;
 	const char* end = s + n;
 	const char* start = s;
-	struct Token* head = NULL;
-	struct Token* tail = NULL;
-	struct Token* t = NULL;
+	struct m3conf_token* head = NULL;
+	struct m3conf_token* tail = NULL;
+	struct m3conf_token* t = NULL;
 
 	while (s < end) {
 		t = NULL;
@@ -108,19 +108,19 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 				} else if (*s == '"') {
 					state = ST_STRCONT;
 				} else if (*s == '0') {
-					t = create_token(TOK_INT, start, 1);
+					t = m3conf_create_token(TOK_INT, start, 1);
 				} else if (strchr(NUM, *s)) {
 					state = ST_INT;
 				} else if (*s == '-') {
 					state = ST_NEG;
 				} else if (*s == '{') {
-					t = create_token(TOK_LB, start, 1);
+					t = m3conf_create_token(TOK_LB, start, 1);
 				} else if (*s == '}') {
-					t = create_token(TOK_RB, start, 1);
+					t = m3conf_create_token(TOK_RB, start, 1);
 				} else if (*s == '=') {
-					t = create_token(TOK_EQ, start, 1);
+					t = m3conf_create_token(TOK_EQ, start, 1);
 				} else if (*s == ';') {
-					t = create_token(TOK_SEMI, start, 1);
+					t = m3conf_create_token(TOK_SEMI, start, 1);
 				} else if (strchr(WS, *s)) {
 					state = ST_WS;
 				} else if (*s == '#') {
@@ -134,7 +134,7 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 				if (strchr(ALPHA, *s) || strchr(NUM, *s) || *s == '_' || *s == '.') {
 					s++;
 				} else {
-					t = create_token(TOK_ID, start, (s - start));
+					t = m3conf_create_token(TOK_ID, start, (s - start));
 					state = ST_INIT;
 				}
 				break;
@@ -155,7 +155,7 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 				s++;
 				break;
 			case ST_STR:
-				t = create_string_token(start, (s - start));
+				t = m3conf_create_string_token(start, (s - start));
 				state = ST_INIT;
 				break;
 			case ST_NEG:
@@ -170,7 +170,7 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 				if (strchr(NUM, *s)) {
 					s++;
 				} else {
-					t = create_token(TOK_INT, start, (s - start));
+					t = m3conf_create_token(TOK_INT, start, (s - start));
 					state = ST_INIT;
 				}
 				break;
@@ -203,13 +203,13 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 	t = NULL;
 	switch (state) {
 		case ST_ID:
-			t = create_token(TOK_ID, start, end - start);
+			t = m3conf_create_token(TOK_ID, start, end - start);
 			break;
 		case ST_STR:
-			t = create_string_token(start, (end - start));
+			t = m3conf_create_string_token(start, (end - start));
 			break;
 		case ST_INT:
-			t = create_token(TOK_INT, start, end - start);
+			t = m3conf_create_token(TOK_INT, start, end - start);
 			break;
 		case ST_WS:
 		case ST_COM:
@@ -227,7 +227,7 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 		}
 	}
 
-	t = create_token_impl(TOK_EOF);
+	t = m3conf_create_token_impl(TOK_EOF);
 	t->value = malloc(sizeof(char));
 	t->value[0] = '\0';
 	if (head == NULL) {
@@ -240,12 +240,12 @@ size_t tokenize(const char* s, size_t n, struct Token** ret) {
 	*ret = head;
 	return 0;
 fail:
-	free_tokens(head);
+	m3conf_free_tokens(head);
 	return n - (end - s) + 1;
 }
 
-void free_tokens(struct Token* t) {
-	struct Token* next = t;
+void m3conf_free_tokens(struct m3conf_token* t) {
+	struct m3conf_token* next = t;
 	while (next) {
 		t = next;
 		next = t->next;
